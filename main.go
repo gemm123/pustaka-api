@@ -23,23 +23,18 @@ func main() {
 
 	reposittory := repository.NewRepository(db)
 	service := service.NewService(reposittory)
-
-	book := models.Book{
-		Title: "why we sleep",
-		Price: 75000,
-	}
-
-	service.Create(book)
+	handler := handler.NewHandler(service)
 
 	sqlDB, _ := db.DB()
 	defer sqlDB.Close()
 
 	router := gin.Default()
 
-	router.GET("/", handler.RootHandler)
-	router.GET("/books/:id", handler.GetBooksByID)
-	router.GET("/books", handler.GetBooksQuery)
-	router.POST("/book", handler.PostBook)
+	router.GET("/books", handler.GetAllBooks)
+	router.GET("/books/:id", handler.GetBookByID)
+	router.PUT("/books/:id", handler.UpdateBook)
+	router.DELETE("books/:id", handler.DeleteBook)
+	router.POST("/books", handler.PostBook)
 
 	router.Run()
 }

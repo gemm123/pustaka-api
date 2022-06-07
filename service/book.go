@@ -8,7 +8,9 @@ import (
 type Service interface {
 	FindAllBook() ([]models.Book, error)
 	FindBookByID(ID int) (models.Book, error)
+	UpdateBook(ID int, bookRequest models.Book) (models.Book, error)
 	CreateBook(bookRequest models.Book) (models.Book, error)
+	DeleteBook(ID int) (models.Book, error)
 }
 
 type service struct {
@@ -29,7 +31,26 @@ func (s *service) FindBookByID(ID int) (models.Book, error) {
 	return book, err
 }
 
-func (s *service) Create(bookRequest models.Book) (models.Book, error) {
+func (s *service) UpdateBook(ID int, bookRequest models.Book) (models.Book, error) {
+	book, err := s.repository.FindBookByID(ID)
+
+	book.Title = bookRequest.Title
+	book.Price = bookRequest.Price
+
+	newBook, err := s.repository.UpdateBook(book)
+
+	return newBook, err
+}
+
+func (s *service) DeleteBook(ID int) (models.Book, error) {
+	book, err := s.repository.FindBookByID(ID)
+
+	bookResponse, err := s.repository.DeleteBook(book)
+
+	return bookResponse, err
+}
+
+func (s *service) CreateBook(bookRequest models.Book) (models.Book, error) {
 	book := models.Book{
 		Title: bookRequest.Title,
 		Price: bookRequest.Price,
